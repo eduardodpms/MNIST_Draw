@@ -7,9 +7,9 @@ import os
 
 
 
-def draw(output='drawing.png', w=256, h=256, line_width=10, color="white", bg_color="black", resize=True, gray=True, canvas_fade=False, exit_code=False):
+def draw(output='drawing.png', w=256, h=256, line_width=10, color="white", bg_color="black", resize=True, gray=True, fade=False, exit_code=False):
   real_filename = os.path.realpath(output)
-  canvas_fade = 1 if canvas_fade else 0 # Translating Python boolean to JS boolean
+  fade = "true" if fade else "false" # Translating Python boolean to JS boolean
 
   canvas_html = f"""
     <canvas width={w} height={h}></canvas>
@@ -78,12 +78,20 @@ def draw(output='drawing.png', w=256, h=256, line_width=10, color="white", bg_co
       var data = new Promise(resolve=>{{
         save_button.onclick = ()=>{{
           var imgData = canvas.toDataURL('image/png');
-          if ({canvas_fade}) canvas.style.display = "none";
+          if ({fade}) {{
+            document.getElementById("save").style.display = "none";
+            document.getElementById("reset").style.display = "none";
+            document.getElementById("exit").style.display = "none";
+          }}
           resolve(imgData)
         }}
 
         exit_button.onclick = ()=>{{
-          if ({canvas_fade}) canvas.style.display = "none";
+          if ({fade}) {{
+            document.getElementById("save").style.display = "none";
+            document.getElementById("reset").style.display = "none";
+            document.getElementById("exit").style.display = "none";
+          }}
           resolve()
         }}
       }})
