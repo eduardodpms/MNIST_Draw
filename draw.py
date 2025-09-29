@@ -7,7 +7,7 @@ import os
 
 
 
-def draw(output='drawing.png', w=256, h=256, line_width=10, color="white", bg_color="black", resize=True, gray=True, canvas_fade=False):
+def draw(output='drawing.png', w=256, h=256, line_width=10, color="white", bg_color="black", resize=True, gray=True, canvas_fade=False, exit_code=False):
   real_filename = os.path.realpath(output)
   canvas_fade = 1 if canvas_fade else 0 # Translating Python boolean to JS boolean
 
@@ -106,5 +106,11 @@ def draw(output='drawing.png', w=256, h=256, line_width=10, color="white", bg_co
         
     img.save(output)
 
+    if(exit_code):
+      return 1
+
   else:
     print(f"\nVocê saiu do desenho.")
+    
+    if(exit_code):
+      return 0
