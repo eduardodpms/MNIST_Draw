@@ -7,7 +7,7 @@ import os
 
 
 
-def draw(output='drawing.png', color="black", bg_color="white", w=256, h=256, resize=True, gray=True, line_width=10):
+def draw(output='drawing.png', w=256, h=256, line_width=10, color="white", bg_color="black", resize=True, gray=True):
   real_filename = os.path.realpath(output)
 
   canvas_html = f"""
@@ -16,7 +16,7 @@ def draw(output='drawing.png', color="black", bg_color="white", w=256, h=256, re
     <div class="slidecontainer">
       &nbsp&nbsp&nbsp&nbsp Traço: &nbsp
       <label for="lineWidth" id="lineWidthLabel">{line_width}px </label>
-      <input type="range" min="1" max="50" value={line_width} class="slider" id="lineWidth"> aaa
+      <input type="range" min="1" max="50" value={line_width} class="slider" id="lineWidth">
     </div>
 
     <div style="div_align: center">
