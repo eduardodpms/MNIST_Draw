@@ -1,22 +1,26 @@
 from google.colab import output as op
 from IPython.display import HTML
 from base64 import b64decode
+from PIL import Image
+import io
 import os
 
 
 
-def draw(output='drawing.png', color="black", bg_color="white", w=256, h=256, line_width=10):
+def draw(output='drawing.png', color="black", bg_color="white", w=256, h=256, resize=True, gray=True, line_width=10):
   real_filename = os.path.realpath(output)
 
   canvas_html = f"""
     <canvas width={w} height={h}></canvas>
 
     <div class="slidecontainer">
-    <label for="lineWidth" id="lineWidthLabel">{line_width}px</label>
-      <input type="range" min="1" max="50" value={line_width} class="slider" id="lineWidth">
+      &nbsp&nbsp&nbsp&nbsp Traço: &nbsp
+      <label for="lineWidth" id="lineWidthLabel">{line_width}px </label>
+      <input type="range" min="1" max="50" value={line_width} class="slider" id="lineWidth"> aaa
     </div>
 
-    <div>
+    <div style="div_align: center">
+      &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
       <button id="save">Salvar</button>
       <button id="reset">Limpar</button>
       <button id="exit">Sair</button>
@@ -86,9 +90,17 @@ def draw(output='drawing.png', color="black", bg_color="white", w=256, h=256, li
   data = op.eval_js("data")
 
   if data:
-    print(f"Salvo em: {real_filename}")
+    print(f"\nSalvo em: {real_filename}")
     binary = b64decode(data.split(',')[1])
-    with open(output, 'wb') as f:
-      f.write(binary)
+    img = Image.open(io.BytesIO(binary))
+
+    if resize:
+      img = img.resize((28, 28), Image.Resampling.LANCZOS) # Resize to 28x28
+
+    if gray:
+      img = img.convert('L') # Ensure Gray scale
+        
+    img.save(output)
+
   else:
-    print(f"Você saiu do desenho.")
+    print(f"\nVocê saiu do desenho.")
