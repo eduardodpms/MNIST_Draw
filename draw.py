@@ -4,74 +4,82 @@ from base64 import b64decode
 import os
 
 
+
 def draw(output='drawing.png', color="black", bg_color="white", w=256, h=256, line_width=10):
   real_filename = os.path.realpath(output)
 
   canvas_html = f"""
-  <canvas width={w} height={h}></canvas>
-  <div class="slidecontainer">
-  <label for="lineWidth" id="lineWidthLabel">{line_width}px</label>
-    <input type="range" min="1" max="35" value={line_width} class="slider" id="lineWidth">
-  </div>
-  <div>
-    <button id="save">Salvar</button>
-    <button id="reset">Limpar</button>
-    <button id="exit">Sair</button>
-  </div>
-  <script>
-    var canvas = document.querySelector('canvas')
-    var ctx = canvas.getContext('2d')
-    ctx.lineWidth = {line_width}
-    ctx.fillStyle = "{bg_color}";
-    
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = "{color}";
-    var strokeColor = document.querySelector('#strokeColor')
-    var bgColor = document.querySelector('#bgColor')
-    var slider = document.getElementById("lineWidth");
-    slider.oninput = function() {{
-      ctx.lineWidth = this.value;
-      lineWidthLabel.innerHTML = `${{this.value}}px`
-    }}
-    
-    var clear_button = document.querySelector('#reset')
-    var button = document.querySelector('#save')
-    var exit_button = document.querySelector('#exit')
+    <canvas width={w} height={h}></canvas>
 
-    var mouse = {{x: 0, y: 0}}
-    canvas.addEventListener('mousemove', function(e) {{
-      mouse.x = e.pageX - this.offsetLeft
-      mouse.y = e.pageY - this.offsetTop
-    }})
-    canvas.onmousedown = ()=>{{
-      ctx.beginPath()
-      ctx.moveTo(mouse.x, mouse.y)
-      canvas.addEventListener('mousemove', onPaint)
-    }}
-    canvas.onmouseup = ()=>{{
-      canvas.removeEventListener('mousemove', onPaint)
-    }}
-    var onPaint = ()=>{{
-      ctx.lineTo(mouse.x, mouse.y)
-      ctx.stroke()
-    }}
-    
-    clear_button.onclick = ()=>{{
+    <div class="slidecontainer">
+    <label for="lineWidth" id="lineWidthLabel">{line_width}px</label>
+      <input type="range" min="1" max="50" value={line_width} class="slider" id="lineWidth">
+    </div>
+
+    <div>
+      <button id="save">Salvar</button>
+      <button id="reset">Limpar</button>
+      <button id="exit">Sair</button>
+    </div>
+
+    <script>
+      var canvas = document.querySelector('canvas')
+      var ctx = canvas.getContext('2d')
+
+      ctx.lineWidth = {line_width}
+      ctx.fillStyle = "{bg_color}";
+      ctx.strokeStyle = "{color}";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      var slider = document.getElementById("lineWidth");
+
+      slider.oninput = function() {{
+        ctx.lineWidth = this.value;
+        lineWidthLabel.innerHTML = `${{this.value}}px`
+      }}
+      
+      var save_button = document.querySelector('#save')
+      var clear_button = document.querySelector('#reset')
+      var exit_button = document.querySelector('#exit')
+
+      var mouse = {{x: 0, y: 0}}
+
+      canvas.addEventListener('mousemove', function(e) {{
+        mouse.x = e.pageX - this.offsetLeft
+        mouse.y = e.pageY - this.offsetTop
+      }})
+
+      canvas.onmousedown = ()=>{{
+        ctx.beginPath()
+        ctx.moveTo(mouse.x, mouse.y)
+        canvas.addEventListener('mousemove', onPaint)
+      }}
+
+      canvas.onmouseup = ()=>{{
+        canvas.removeEventListener('mousemove', onPaint)
+      }}
+
+      var onPaint = ()=>{{
+        ctx.lineTo(mouse.x, mouse.y)
+        ctx.stroke()
+      }}
+      
+      clear_button.onclick = ()=>{{
         console.log('Clearing Screen')
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       }}
-    var data = new Promise(resolve=>{{
-      button.onclick = ()=>{{
-        resolve(canvas.toDataURL('image/png'))
-      }}
-      exit_button.onclick = ()=>{{
-      resolve()
-    }}
-      
-    }})
-    
-  </script>
+
+      var data = new Promise(resolve=>{{
+        save_button.onclick = ()=>{{
+          resolve(canvas.toDataURL('image/png'))
+        }}
+
+        exit_button.onclick = ()=>{{
+        resolve()
+        }}
+      }})
+    </script>
   """
 
   display(HTML(canvas_html))
