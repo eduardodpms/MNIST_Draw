@@ -7,9 +7,9 @@ import os
 
 
 
-def draw(output='drawing.png', entry=None, w=256, h=256, line_width=10, color="white", bg_color="black", resize=True, gray=True, fade=False, log=True, exit_code=False):
+def draw(output='drawing.png', entry=None, w=256, h=256, line_width=10, color="white", bg_color="black", resize=True, gray=True, button_fade=False, log=True, exit_code=False):
   real_output = os.path.realpath(output)
-  fade = "true" if fade else "false" # Translating Python boolean to JS boolean
+  button_fade = "true" if button_fade else "false" # Translating Python boolean to JS boolean
 
   if entry!=None and os.path.exists(entry):
     real_entry = os.path.realpath(entry)
@@ -25,7 +25,7 @@ def draw(output='drawing.png', entry=None, w=256, h=256, line_width=10, color="w
     <div class="slidecontainer">
       &nbsp&nbsp&nbsp&nbsp Traço: &nbsp
       <label for="lineWidth" id="lineWidthLabel">{line_width}px </label>
-      <input type="range" min="1" max="50" value={line_width} class="slider" id="lineWidth">
+      <input type="range" min="1" max="30" value={line_width} class="slider" id="lineWidth">
     </div>
 
     <div style="div_align: center">
@@ -38,6 +38,7 @@ def draw(output='drawing.png', entry=None, w=256, h=256, line_width=10, color="w
     <script>
       var canvas = document.querySelector('canvas')
       var ctx = canvas.getContext('2d')
+      var canvas_disable = false
 
       ctx.lineWidth = {line_width}
       ctx.fillStyle = "{bg_color}";
@@ -73,8 +74,10 @@ def draw(output='drawing.png', entry=None, w=256, h=256, line_width=10, color="w
       }}
 
       var onPaint = ()=>{{
-        ctx.lineTo(mouse.x, mouse.y)
-        ctx.stroke()
+        if (!canvas_disable) {{
+          ctx.lineTo(mouse.x, mouse.y)
+          ctx.stroke()
+        }}
       }}
       
       clear_button.onclick = ()=>{{
@@ -85,21 +88,25 @@ def draw(output='drawing.png', entry=None, w=256, h=256, line_width=10, color="w
 
       var data = new Promise(resolve=>{{
         save_button.onclick = ()=>{{
-          var imgData = canvas.toDataURL('image/png');
-          if ({fade}) {{
+          if ({button_fade}) {{
             document.getElementById("save").style.display = "none";
             document.getElementById("reset").style.display = "none";
             document.getElementById("exit").style.display = "none";
           }}
+          canvas_disable = true
+          
+          var imgData = canvas.toDataURL('image/png');
           resolve(imgData)
         }}
 
         exit_button.onclick = ()=>{{
-          if ({fade}) {{
+          if ({button_fade}) {{
             document.getElementById("save").style.display = "none";
             document.getElementById("reset").style.display = "none";
             document.getElementById("exit").style.display = "none";
           }}
+          canvas_disable = true
+
           resolve()
         }}
       }})
