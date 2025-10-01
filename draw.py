@@ -1,15 +1,23 @@
 from google.colab import output as op
 from IPython.display import HTML
-from base64 import b64decode
+from base64 import b64decode, b64encode
 from PIL import Image
 import io
 import os
 
 
 
-def draw(output='drawing.png', w=256, h=256, line_width=10, color="white", bg_color="black", resize=True, gray=True, fade=False, exit_code=False):
-  real_filename = os.path.realpath(output)
+def draw(output='drawing.png', entry=None, w=256, h=256, line_width=10, color="white", bg_color="black", resize=True, gray=True, fade=False, exit_code=False):
+  real_output = os.path.realpath(output)
   fade = "true" if fade else "false" # Translating Python boolean to JS boolean
+
+  if entry!=None and os.path.exists(entry):
+    real_entry = os.path.realpath(entry)
+    with open(real_entry, "rb") as img_file:
+        b64_img = b64encode(img_file.read()).decode()
+  else:
+    b64_img = None
+
 
   canvas_html = f"""
     <canvas width={w} height={h}></canvas>
@@ -95,14 +103,21 @@ def draw(output='drawing.png', w=256, h=256, line_width=10, color="white", bg_co
           resolve()
         }}
       }})
+
+      var img = new Image();
+      img.onload = function() {{
+        ctx.drawImage(img, 0, 0, {w}, {h});
+      }};
+      img.src = "data:image/png;base64,{b64_img}";
     </script>
   """
+
 
   display(HTML(canvas_html))
   data = op.eval_js("data")
 
   if data:
-    print(f"\nSalvo em: {real_filename}")
+    print(f"\nSalvo em: {real_output}")
     binary = b64decode(data.split(',')[1])
     img = Image.open(io.BytesIO(binary))
 
