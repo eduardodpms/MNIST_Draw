@@ -113,6 +113,7 @@ def draw(output='drawing.png', entry=None, w=256, h=256, line_width=10, color="w
 
       var img = new Image();
       img.onload = function() {{
+        ctx.imageSmoothingEnabled = false;
         ctx.drawImage(img, 0, 0, {w}, {h});
       }};
       img.src = "data:image/png;base64,{b64_img}";
